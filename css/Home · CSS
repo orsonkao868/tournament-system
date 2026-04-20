@@ -1,0 +1,238 @@
+/* ============================================================
+   home.css — 賽事列表頁
+   ============================================================ */
+
+/* ── Hero 區塊 ── */
+.home-hero {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 32px var(--page-pad);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 裝飾圓 */
+.home-hero::before {
+  content: '';
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: var(--pink-dim);
+  pointer-events: none;
+}
+.home-hero::after {
+  content: '';
+  position: absolute;
+  right: 60px;
+  top: 30px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 1px solid rgba(240, 30, 122, 0.18);
+  pointer-events: none;
+}
+
+.home-hero-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--pink);
+  background: var(--pink-dim);
+  border: 1px solid var(--pink-border);
+  padding: 3px 12px;
+  border-radius: var(--r-xl);
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.home-hero h1 {
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.home-hero p {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+  max-width: 480px;
+}
+
+.home-stats {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.home-stat label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.home-stat .val {
+  font-size: 24px;
+  font-weight: 500;
+}
+.home-stat .val-pink { color: var(--pink-bright); }
+
+/* ── 篩選列 ── */
+.home-filters {
+  display: flex;
+  gap: 8px;
+  padding: 14px var(--page-pad);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.home-filters::-webkit-scrollbar { display: none; }
+
+.home-search {
+  flex: 1;
+  min-width: 140px;
+  max-width: 280px;
+  padding: 8px 12px;
+  font-size: 13px;
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+.home-search::placeholder { color: var(--text-muted); }
+.home-search:focus {
+  outline: none;
+  border-color: var(--pink-border);
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  font-size: 12px;
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-xl);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.filter-chip:hover { color: var(--text-dim); border-color: var(--border-hi); }
+.filter-chip.active {
+  background: var(--pink-dim);
+  color: var(--pink-bright);
+  border-color: var(--pink-border);
+}
+
+/* ── 賽事卡片格線 ── */
+.tournament-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border-top: 1px solid var(--border);
+}
+
+/* ── 單張賽事卡片 ── */
+.t-card {
+  background: var(--bg);
+  padding: 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+}
+.t-card:hover { background: var(--surface); }
+
+.t-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.t-card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-md);
+  background: var(--pink-dim);
+  border: 1px solid var(--pink-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.t-card-icon svg { width: 20px; height: 20px; }
+
+.t-card h3 {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.t-card-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+
+.t-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.t-card-players {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.t-card-players strong {
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+/* 新增卡片（虛線） */
+.t-card-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 150px;
+  border: 1px dashed rgba(240, 30, 122, 0.3);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.t-card-add:hover { background: var(--pink-dim); }
+.t-card-add-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--pink-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.t-card-add span {
+  font-size: 13px;
+  color: rgba(240, 30, 122, 0.8);
+}
+
+/* ── 手機響應式 ── */
+@media (max-width: 640px) {
+  .home-hero h1    { font-size: 22px; }
+  .home-hero::before { display: none; }
+  .home-hero::after  { display: none; }
+
+  .tournament-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-search { max-width: 100%; }
+}

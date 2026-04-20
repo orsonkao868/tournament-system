@@ -1,0 +1,145 @@
+/* ============================================================
+   standings.css — 積分榜頁
+   ============================================================ */
+
+.standings-header {
+  padding: 18px var(--page-pad);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.standings-header h2 { font-size: 15px; font-weight: 500; }
+
+/* ── 賽事選擇器 ── */
+.standings-selector {
+  padding: 12px var(--page-pad);
+  border-bottom: 1px solid var(--border);
+}
+.standings-selector select {
+  padding: 9px 13px;
+  background: var(--surface);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  color: var(--text);
+  font-size: 13px;
+  width: 100%;
+  max-width: 360px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.standings-selector select:focus {
+  outline: none;
+  border-color: var(--pink-border);
+}
+
+/* ── 表頭 ── */
+.standings-thead {
+  display: grid;
+  grid-template-columns: 40px 1fr 36px 36px 60px 64px;
+  align-items: center;
+  padding: 8px var(--page-pad);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ── 每列 ── */
+.standings-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 36px 36px 60px 64px;
+  align-items: center;
+  padding: 12px var(--page-pad);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+.standings-row:hover        { background: var(--surface); }
+.standings-row:last-child   { border-bottom: none; }
+
+/* 排名 */
+.s-rank { font-size: 13px; color: var(--text-muted); }
+.s-rank.gold   { color: #f0b030; font-weight: 500; }
+.s-rank.silver { color: #b0b8c8; font-weight: 500; }
+.s-rank.bronze { color: #d0704a; font-weight: 500; }
+
+/* 頭像 + 姓名 */
+.s-player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.s-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--pink-dim);
+  border: 1px solid var(--pink-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--pink-bright);
+  flex-shrink: 0;
+}
+.s-avatar.dim {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border);
+  color: var(--text-dim);
+}
+.s-name     { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-bey      { font-size: 11px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 數字欄 */
+.s-num { text-align: center; font-size: 14px; }
+.s-num.win  { color: var(--pink-bright); font-weight: 500; }
+.s-num.lose { color: var(--text-muted); }
+
+/* 積分 */
+.s-pts {
+  text-align: right;
+  font-size: 14px;
+  font-weight: 500;
+}
+.s-pts.top { color: var(--pink-bright); }
+
+/* 勝率條 */
+.s-bar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.s-bar {
+  width: 44px;
+  height: 3px;
+  background: var(--surface2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.s-bar-fill {
+  height: 100%;
+  background: var(--pink);
+  border-radius: 2px;
+}
+
+/* ── 手機響應式 ── */
+@media (max-width: 640px) {
+  /* 手機隱藏勝率條，調整欄位 */
+  .standings-thead,
+  .standings-row {
+    grid-template-columns: 36px 1fr 32px 32px 50px;
+  }
+  /* 隱藏勝率欄 */
+  .standings-thead > :last-child,
+  .standings-row .s-bar-wrap {
+    display: none;
+  }
+  .s-name  { font-size: 13px; }
+  .s-bey   { display: none; }
+}
