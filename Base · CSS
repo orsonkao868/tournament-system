@@ -1,0 +1,268 @@
+/* ============================================================
+   base.css — 全域設計 token、reset、排版、通用元件
+   ============================================================ */
+
+/* ── Design Tokens ── */
+:root {
+  /* 色彩 */
+  --bg:          #0a0a0a;
+  --surface:     #111111;
+  --surface2:    #1a1a1a;
+  --surface3:    #222222;
+  --border:      rgba(255, 255, 255, 0.08);
+  --border-md:   rgba(255, 255, 255, 0.14);
+  --border-hi:   rgba(255, 255, 255, 0.22);
+
+  --pink:        #f01e7a;
+  --pink-bright: #ff4fa0;
+  --pink-dim:    rgba(240, 30, 122, 0.12);
+  --pink-border: rgba(240, 30, 122, 0.35);
+
+  --text:        #f0f0f0;
+  --text-dim:    #999999;
+  --text-muted:  #555555;
+
+  /* 字型 */
+  --font: -apple-system, "Noto Sans TC", "PingFang TC",
+          "Microsoft JhengHei", sans-serif;
+  --font-mono: "SF Mono", "Fira Code", monospace;
+
+  /* 圓角 */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 20px;
+
+  /* 間距 */
+  --nav-h: 56px;
+  --page-pad: 24px;
+  --page-pad-sm: 16px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, svg { display: block; max-width: 100%; }
+button { cursor: pointer; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+
+/* ── 頁面切換 ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── 主內容區域 ── */
+#app {
+  padding-top: var(--nav-h);
+  min-height: 100dvh;
+}
+
+/* ── 通用按鈕 ── */
+.btn-ghost {
+  padding: 7px 16px;
+  font-size: 13px;
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--text-dim);
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-ghost:hover {
+  border-color: var(--border-hi);
+  color: var(--text);
+}
+
+.btn-pink {
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--pink);
+  color: #fff;
+  letter-spacing: 0.2px;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-pink:hover  { background: var(--pink-bright); }
+.btn-pink:active { transform: scale(0.97); }
+
+.btn-outline-pink {
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--pink-border);
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--pink-bright);
+  transition: background 0.15s;
+}
+.btn-outline-pink:hover { background: var(--pink-dim); }
+
+/* ── 狀態 Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: var(--r-xl);
+  letter-spacing: 0.3px;
+}
+.badge::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.badge-live     { background: rgba(240,30,122,0.18); color: #ff4fa0; border: 1px solid var(--pink-border); }
+.badge-open     { background: rgba(30,180,240,0.13); color: #4fc8ff; border: 1px solid rgba(30,180,240,0.3); }
+.badge-done     { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border); }
+.badge-upcoming { background: rgba(180,240,30,0.1); color: #a0d84f; border: 1px solid rgba(180,240,30,0.25); }
+
+/* ── Tag（尺寸標籤等）── */
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--r-sm);
+  background: var(--surface2);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+/* ── Divider ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* ── Toast 通知 ── */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  padding: 12px 18px;
+  background: var(--surface2);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  font-size: 13px;
+  color: var(--text);
+  animation: slideUp 0.2s ease;
+  max-width: 280px;
+}
+.toast.success { border-left: 3px solid var(--pink); }
+.toast.error   { border-left: 3px solid #e24b4a; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 載入動畫 ── */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-md);
+  border-top-color: var(--pink);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 24px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.empty-state {
+  padding: 60px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.empty-state p { margin-top: 8px; font-size: 13px; }
+
+/* ── 表單基礎元素 ── */
+.field { margin-bottom: 18px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 7px;
+  letter-spacing: 0.3px;
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 10px 13px;
+  font-size: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  color: var(--text);
+  transition: border-color 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--pink-border);
+}
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--text-muted);
+}
+.field-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+/* ── 響應式斷點 ── */
+@media (max-width: 640px) {
+  :root {
+    --page-pad: var(--page-pad-sm);
+  }
+  .toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+  .toast { max-width: 100%; }
+}

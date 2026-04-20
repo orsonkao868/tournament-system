@@ -1,0 +1,129 @@
+/* ============================================================
+   create.css — 舉辦賽事頁（建賽表單）
+   ============================================================ */
+
+.create-wrap {
+  max-width: 540px;
+  padding: 32px var(--page-pad);
+}
+
+.create-wrap h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.create-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 28px;
+}
+
+/* ── 人數選擇（4個大按鈕）── */
+.size-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.size-opt {
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  padding: 12px 0;
+  text-align: center;
+  cursor: pointer;
+  background: transparent;
+  transition: border-color 0.15s, background 0.15s;
+}
+.size-opt:hover { border-color: var(--pink-border); }
+.size-opt.sel {
+  border-color: var(--pink);
+  background: var(--pink-dim);
+}
+.size-opt .size-num {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1;
+}
+.size-opt.sel .size-num { color: var(--pink-bright); }
+.size-opt .size-lbl {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+/* ── 賽制格式選擇 ── */
+.fmt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.fmt-opt {
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  padding: 13px;
+  cursor: pointer;
+  background: transparent;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+.fmt-opt:hover { border-color: var(--pink-border); }
+.fmt-opt.sel {
+  border-color: var(--pink);
+  background: var(--pink-dim);
+}
+.fmt-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.fmt-opt.sel .fmt-name { color: var(--pink-bright); }
+.fmt-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ── 表單按鈕 ── */
+.create-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+.btn-draft {
+  flex: 1;
+  padding: 11px;
+  font-size: 14px;
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-draft:hover { border-color: var(--border-hi); color: var(--text); }
+.btn-publish {
+  flex: 2;
+  padding: 11px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--pink);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-publish:hover  { background: var(--pink-bright); }
+.btn-publish:active { transform: scale(0.98); }
+.btn-publish:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── 手機響應式 ── */
+@media (max-width: 480px) {
+  .size-grid { grid-template-columns: repeat(2, 1fr); }
+  .fmt-grid  { grid-template-columns: 1fr; }
+}

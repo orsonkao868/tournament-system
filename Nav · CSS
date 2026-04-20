@@ -1,0 +1,181 @@
+/* ============================================================
+   nav.css — 導覽列（含手機漢堡選單）
+   ============================================================ */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: var(--nav-h);
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 0;
+}
+
+/* ── Logo ── */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 20px;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.nav-logo-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.nav-logo-mark svg { width: 18px; height: 18px; }
+.nav-logo-text {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+.nav-logo-text .accent { color: var(--pink); }
+
+/* ── 主選單包裝（桌面：一排；手機：收合抽屜） ── */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 0;
+}
+
+/* ── 分頁 Tab ── */
+.nav-tabs {
+  display: flex;
+  flex: 1;
+  padding-left: 8px;
+}
+.nav-tab {
+  padding: 0 16px;
+  height: var(--nav-h);
+  font-size: 13px;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+.nav-tab:hover  { color: var(--text-dim); }
+.nav-tab.active {
+  color: var(--pink-bright);
+  border-bottom-color: var(--pink);
+}
+
+/* ── 右側按鈕 ── */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+  flex-shrink: 0;
+}
+
+/* ── 漢堡按鈕（手機專用）── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  padding: 8px;
+  margin-left: auto;
+}
+.nav-hamburger span {
+  display: block;
+  height: 1.5px;
+  background: var(--text-dim);
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ── 手機響應式 ── */
+@media (max-width: 768px) {
+  .nav {
+    padding: 0 16px;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: var(--nav-h);
+  }
+
+  .nav-logo {
+    height: var(--nav-h);
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .nav-hamburger { display: flex; }
+
+  .nav-menu {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    border-top: 1px solid var(--border);
+    padding: 12px 0;
+    gap: 0;
+  }
+  .nav-menu.open { display: flex; }
+
+  .nav-tabs {
+    flex-direction: column;
+    padding-left: 0;
+  }
+  .nav-tab {
+    height: auto;
+    padding: 13px 16px;
+    text-align: left;
+    border-bottom: none;
+    border-left: 2px solid transparent;
+    font-size: 14px;
+  }
+  .nav-tab.active {
+    border-bottom-color: transparent;
+    border-left-color: var(--pink);
+    background: var(--pink-dim);
+    color: var(--pink-bright);
+  }
+
+  .nav-actions {
+    padding: 12px 16px 4px;
+    border-top: 1px solid var(--border);
+    justify-content: stretch;
+  }
+  .nav-actions .btn-ghost,
+  .nav-actions .btn-pink {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  #app {
+    /* 手機導覽列高度會因展開而變動，先固定 nav-h */
+    padding-top: var(--nav-h);
+  }
+}

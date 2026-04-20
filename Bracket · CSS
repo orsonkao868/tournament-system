@@ -1,0 +1,161 @@
+/* ============================================================
+   bracket.css — 對陣表頁
+   ============================================================ */
+
+.bracket-header {
+  padding: 18px var(--page-pad);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.bracket-header-left h2 {
+  font-size: 15px;
+  font-weight: 500;
+}
+.bracket-header-left p {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 3px;
+}
+
+/* ── 賽事選擇器 ── */
+.bracket-selector {
+  padding: 12px var(--page-pad);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.bracket-selector select {
+  padding: 9px 13px;
+  background: var(--surface);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  color: var(--text);
+  font-size: 13px;
+  width: 100%;
+  max-width: 360px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.bracket-selector select:focus {
+  outline: none;
+  border-color: var(--pink-border);
+}
+
+/* ── 輪次 Tab ── */
+.round-tabs {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 var(--page-pad);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.round-tabs::-webkit-scrollbar { display: none; }
+.round-tab {
+  padding: 11px 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.round-tab:hover  { color: var(--text-dim); }
+.round-tab.active {
+  color: var(--pink-bright);
+  border-bottom-color: var(--pink);
+}
+
+/* ── 對陣表主體（水平捲動） ── */
+.bracket-scroll {
+  padding: 24px var(--page-pad);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+}
+
+.bracket-rounds {
+  display: flex;
+  gap: 36px;
+  min-width: max-content;
+  align-items: flex-start;
+}
+
+.bracket-round {
+  display: flex;
+  flex-direction: column;
+}
+
+.round-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--pink);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+/* ── 對戰卡片 ── */
+.match-card {
+  width: 180px;
+  background: var(--surface);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  margin-bottom: 16px;
+  transition: border-color 0.15s;
+}
+.match-card.live   { border-color: rgba(240, 30, 122, 0.5); }
+.match-card.tbd    { opacity: 0.45; }
+
+.match-live-bar {
+  height: 2px;
+  background: var(--pink);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ── 選手列 ── */
+.match-player {
+  display: flex;
+  align-items: center;
+  padding: 9px 11px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  gap: 6px;
+}
+.match-player:last-child { border-bottom: none; }
+
+.match-player.winner { background: rgba(240, 30, 122, 0.08); }
+.match-player.winner .mp-name  { color: var(--pink-bright); font-weight: 500; }
+.match-player.winner .mp-score { color: var(--pink); font-weight: 500; }
+
+.mp-seed {
+  font-size: 10px;
+  color: var(--text-muted);
+  min-width: 16px;
+}
+.mp-name  { flex: 1; color: var(--text); }
+.mp-score { font-size: 13px; color: var(--text-muted); }
+.mp-live  { font-size: 10px; color: var(--pink); font-weight: 500; }
+
+/* ── 手機響應式 ── */
+@media (max-width: 640px) {
+  .bracket-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .match-card { width: 160px; }
+  .bracket-rounds { gap: 24px; }
+}
