@@ -2,39 +2,63 @@
    js/auth.js — 登入 / 註冊 / 登出 / 用戶狀態管理
    ============================================================ */
 
-let currentUser = null;
-let currentProfile = null;
+/* ── 全域狀態（用 window 確保跨模組共享）── */
+window.currentUser    = null;
+window.currentProfile = null;
 
-/* ── 取得目前登入用戶 ── */
-async function getUser() {
-  const { data: { user } } = await db.auth.getUser();
-  currentUser = user;
-  return user;
+/* ── 初始化：頁面載入時檢查登入狀態 ── */
+async function initAuth() {
+  const { data: { session } } = await db.auth.getSession();
+  if (session?.user) {
+    window.currentUser = session.user;
+    window.currentProfile = await fetchProfile(session.user.id);
+  }
+  updateNavAuth();
+
+  /* 監聽登入狀態變化 */
+  db.auth.onAuthStateChange(async (event, session) => {
+    window.currentUser = session?.user || null;
+    window.currentProfile = session?.user ? await fetchProfile(session.user.id) : null;
+    updateNavAuth();
+
+    if (event === 'SIGNED_IN') {
+      closeAuthModal();
+      showToast('登入成功！');
+      /* 若為 admin 刷新頁面內容 */
+      const hash = location.hash.replace('#', '') || 'home';
+      navigateTo(hash);
+    }
+    if (event === 'SIGNED_OUT') {
+      showToast('已登出');
+      navigateTo('home');
+    }
+  });
 }
 
-/* ── 取得用戶 profile（角色、暱稱）── */
-async function getProfile(userId) {
+/* ── 取得 profile ── */
+async function fetchProfile(userId) {
   const { data } = await db
     .from('profiles')
     .select('*')
     .eq('id', userId)
     .single();
-  currentProfile = data;
-  return data;
+  return data || null;
 }
 
 /* ── 更新導覽列用戶狀態 ── */
-async function updateNavAuth() {
-  const user = await getUser();
+function updateNavAuth() {
+  const user    = window.currentUser;
+  const profile = window.currentProfile;
+
   const loginBtn  = document.getElementById('btnLogin');
   const signupBtn = document.getElementById('btnSignup');
   const userMenu  = document.getElementById('userMenu');
   const adminTab  = document.getElementById('adminTab');
 
   if (user) {
-    const profile = await getProfile(user.id);
-    const name = profile?.display_name || user.email.split('@')[0];
+    const name    = profile?.display_name || user.email.split('@')[0];
     const initial = name.slice(0, 1).toUpperCase();
+    const isAdmin = profile?.role === 'admin';
 
     if (loginBtn)  loginBtn.style.display  = 'none';
     if (signupBtn) signupBtn.style.display = 'none';
@@ -45,10 +69,9 @@ async function updateNavAuth() {
       const roleEl   = document.getElementById('userRoleDisplay');
       if (avatarEl) avatarEl.textContent = initial;
       if (nameEl)   nameEl.textContent   = name;
-      if (roleEl)   roleEl.textContent   = profile?.role === 'admin' ? '主辦人' : '選手';
+      if (roleEl)   roleEl.textContent   = isAdmin ? '主辦人' : '選手';
     }
-    /* 主辦人才顯示後台 Tab */
-    if (adminTab) adminTab.style.display = profile?.role === 'admin' ? '' : 'none';
+    if (adminTab) adminTab.style.display = isAdmin ? '' : 'none';
   } else {
     if (loginBtn)  loginBtn.style.display  = '';
     if (signupBtn) signupBtn.style.display = '';
@@ -57,21 +80,9 @@ async function updateNavAuth() {
   }
 }
 
-/* ── 監聽登入狀態變化 ── */
-db.auth.onAuthStateChange(async (event, session) => {
-  currentUser = session?.user || null;
-  await updateNavAuth();
-
-  /* 若在需要登入的頁面且用戶登出，導回首頁 */
-  if (!session && ['admin'].includes(location.hash.replace('#', ''))) {
-    navigateTo('home');
-  }
-});
-
-/* ── 顯示登入 Modal ── */
+/* ── 顯示登入／註冊 Modal ── */
 function showAuthModal(mode = 'login') {
-  const existing = document.getElementById('authModal');
-  if (existing) existing.remove();
+  document.getElementById('authModal')?.remove();
 
   const modal = document.createElement('div');
   modal.id = 'authModal';
@@ -79,18 +90,12 @@ function showAuthModal(mode = 'login') {
   modal.innerHTML = `
     <div class="modal-box">
       <button class="modal-close" id="closeAuthModal">✕</button>
-
       <div class="modal-tabs">
         <button class="modal-tab ${mode === 'login' ? 'active' : ''}" data-mode="login">登入</button>
         <button class="modal-tab ${mode === 'signup' ? 'active' : ''}" data-mode="signup">註冊</button>
       </div>
-
-      <div id="authForm">
-        ${renderAuthForm(mode)}
-      </div>
-
+      <div id="authForm">${renderAuthForm(mode)}</div>
       <div class="modal-divider"><span>或</span></div>
-
       <button class="btn-google" id="googleAuth">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
           <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
@@ -100,7 +105,6 @@ function showAuthModal(mode = 'login') {
         </svg>
         使用 Google 登入
       </button>
-
       <div id="authError" class="auth-error" style="display:none"></div>
     </div>`;
 
@@ -135,15 +139,15 @@ function showAuthModal(mode = 'login') {
 function renderAuthForm(mode) {
   if (mode === 'login') {
     return `
-      <div class="field"><label>Email</label><input id="authEmail" type="email" placeholder="your@email.com" /></div>
-      <div class="field"><label>密碼</label><input id="authPassword" type="password" placeholder="••••••••" /></div>
+      <div class="field"><label>Email</label><input id="authEmail" type="email" placeholder="your@email.com" autocomplete="email" /></div>
+      <div class="field"><label>密碼</label><input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password" /></div>
       <button class="btn-pink-full" id="authSubmit">登入</button>
       <button class="btn-text" id="forgotPassword">忘記密碼？</button>`;
   } else {
     return `
-      <div class="field"><label>暱稱</label><input id="authName" type="text" placeholder="你的顯示名稱" /></div>
-      <div class="field"><label>Email</label><input id="authEmail" type="email" placeholder="your@email.com" /></div>
-      <div class="field"><label>密碼</label><input id="authPassword" type="password" placeholder="至少 6 位數" /></div>
+      <div class="field"><label>暱稱</label><input id="authName" type="text" placeholder="你的顯示名稱" autocomplete="nickname" /></div>
+      <div class="field"><label>Email</label><input id="authEmail" type="email" placeholder="your@email.com" autocomplete="email" /></div>
+      <div class="field"><label>密碼</label><input id="authPassword" type="password" placeholder="至少 6 位數" autocomplete="new-password" /></div>
       <button class="btn-pink-full" id="authSubmit">建立帳號</button>`;
   }
 }
@@ -151,6 +155,11 @@ function renderAuthForm(mode) {
 function bindAuthForm(mode) {
   const submitBtn = document.getElementById('authSubmit');
   if (!submitBtn) return;
+
+  /* Enter 鍵送出 */
+  document.getElementById('authModal').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitBtn.click();
+  });
 
   submitBtn.addEventListener('click', async () => {
     const email    = document.getElementById('authEmail')?.value.trim();
@@ -164,31 +173,37 @@ function bindAuthForm(mode) {
 
     if (mode === 'login') {
       const { error } = await db.auth.signInWithPassword({ email, password });
-      if (error) { showAuthError('登入失敗：' + error.message); }
-      else { closeAuthModal(); showToast('登入成功！'); }
+      if (error) {
+        showAuthError('登入失敗，請確認帳號密碼');
+        submitBtn.disabled = false;
+        submitBtn.textContent = '登入';
+      }
+      /* 成功由 onAuthStateChange 處理 */
     } else {
       if (!name) { showAuthError('請填寫暱稱'); submitBtn.disabled = false; submitBtn.textContent = '建立帳號'; return; }
       const { data, error } = await db.auth.signUp({ email, password });
-      if (error) { showAuthError('註冊失敗：' + error.message); }
-      else {
-        /* 建立 profile */
-        await db.from('profiles').insert({ id: data.user.id, display_name: name, role: 'player' });
+      if (error) {
+        showAuthError('註冊失敗：' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = '建立帳號';
+      } else if (data?.user) {
+        await db.from('profiles').upsert({ id: data.user.id, display_name: name, role: 'player' });
         closeAuthModal();
-        showToast('註冊成功！請確認 Email 後登入');
+        showToast('註冊成功！請登入');
+        showAuthModal('login');
       }
     }
-
-    submitBtn.disabled = false;
-    submitBtn.textContent = mode === 'login' ? '登入' : '建立帳號';
   });
 
   /* 忘記密碼 */
   document.getElementById('forgotPassword')?.addEventListener('click', async () => {
     const email = document.getElementById('authEmail')?.value.trim();
     if (!email) { showAuthError('請先輸入 Email'); return; }
-    await db.auth.resetPasswordForEmail(email);
-    showToast('重設密碼信已寄出！');
-    closeAuthModal();
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: location.href
+    });
+    if (error) showAuthError('寄送失敗：' + error.message);
+    else { showToast('重設密碼信已寄出！'); closeAuthModal(); }
   });
 }
 
@@ -204,28 +219,24 @@ function closeAuthModal() {
 /* ── 登出 ── */
 async function signOut() {
   await db.auth.signOut();
-  currentUser = null;
-  currentProfile = null;
-  showToast('已登出');
-  navigateTo('home');
 }
 
-/* ── 工具：檢查是否登入 ── */
+/* ── 工具：需要登入才能執行 ── */
 function requireAuth(callback) {
-  if (currentUser) { callback(); }
-  else { showAuthModal('login'); }
+  if (window.currentUser) callback();
+  else showAuthModal('login');
 }
 
-/* ── 工具：檢查是否為主辦人 ── */
+/* ── 工具：是否為主辦人 ── */
 function isAdmin() {
-  return currentProfile?.role === 'admin';
+  return window.currentProfile?.role === 'admin';
 }
 
+/* ── 匯出 ── */
 window.showAuthModal  = showAuthModal;
 window.closeAuthModal = closeAuthModal;
 window.signOut        = signOut;
 window.requireAuth    = requireAuth;
 window.isAdmin        = isAdmin;
-window.getUser        = getUser;
-window.currentUser    = currentUser;
-window.currentProfile = currentProfile;
+window.updateNavAuth  = updateNavAuth;
+window.initAuth       = initAuth;
