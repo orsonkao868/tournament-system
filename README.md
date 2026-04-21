@@ -91,3 +91,5 @@ git push -u origin main
 - **即時推播**：Supabase Realtime 訂閱對戰更新
 - **陀螺資料庫**：BeybladeX 部件查詢
 - **QR 報名**：掃碼直接填表參賽`
+- https://orsonkao868.github.io/tournament-system/
+  
