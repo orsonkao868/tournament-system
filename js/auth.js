@@ -2,32 +2,25 @@
    js/auth.js — 登入 / 註冊 / 登出 / 用戶狀態管理
    ============================================================ */
 
-/* ── 全域狀態（用 window 確保跨模組共享）── */
 window.currentUser    = null;
 window.currentProfile = null;
 
-/* ── 初始化：頁面載入時檢查登入狀態 ── */
 async function initAuth() {
-  const { data: { session } } = await db.auth.getSession();
-  if (session?.user) {
-    window.currentUser = session.user;
-    window.currentProfile = await fetchProfile(session.user.id);
+  try {
+    const { data: { session } } = await db.auth.getSession();
+    if (session?.user) {
+      window.currentUser = session.user;
+      window.currentProfile = await fetchProfile(session.user.id);
+    }
+  } catch(e) {
+    console.warn('Auth init error:', e);
   }
   updateNavAuth();
 
-  /* 監聽登入狀態變化 */
   db.auth.onAuthStateChange(async (event, session) => {
     window.currentUser = session?.user || null;
     window.currentProfile = session?.user ? await fetchProfile(session.user.id) : null;
     updateNavAuth();
-
-    if (event === 'SIGNED_IN') {
-      closeAuthModal();
-      showToast('登入成功！');
-      /* 若為 admin 刷新頁面內容 */
-      const hash = location.hash.replace('#', '') || 'home';
-      navigateTo(hash);
-    }
     if (event === 'SIGNED_OUT') {
       showToast('已登出');
       navigateTo('home');
@@ -35,7 +28,6 @@ async function initAuth() {
   });
 }
 
-/* ── 取得 profile ── */
 async function fetchProfile(userId) {
   const { data } = await db
     .from('profiles')
@@ -45,7 +37,6 @@ async function fetchProfile(userId) {
   return data || null;
 }
 
-/* ── 更新導覽列用戶狀態 ── */
 function updateNavAuth() {
   const user    = window.currentUser;
   const profile = window.currentProfile;
@@ -58,7 +49,7 @@ function updateNavAuth() {
   if (user) {
     const name    = profile?.display_name || user.email.split('@')[0];
     const initial = name.slice(0, 1).toUpperCase();
-    const isAdmin = profile?.role === 'admin';
+    const admin   = profile?.role === 'admin';
 
     if (loginBtn)  loginBtn.style.display  = 'none';
     if (signupBtn) signupBtn.style.display = 'none';
@@ -69,9 +60,9 @@ function updateNavAuth() {
       const roleEl   = document.getElementById('userRoleDisplay');
       if (avatarEl) avatarEl.textContent = initial;
       if (nameEl)   nameEl.textContent   = name;
-      if (roleEl)   roleEl.textContent   = isAdmin ? '主辦人' : '選手';
+      if (roleEl)   roleEl.textContent   = admin ? '主辦人' : '選手';
     }
-    if (adminTab) adminTab.style.display = isAdmin ? '' : 'none';
+    if (adminTab) adminTab.style.display = admin ? '' : 'none';
   } else {
     if (loginBtn)  loginBtn.style.display  = '';
     if (signupBtn) signupBtn.style.display = '';
@@ -80,7 +71,6 @@ function updateNavAuth() {
   }
 }
 
-/* ── 顯示登入／註冊 Modal ── */
 function showAuthModal(mode = 'login') {
   document.getElementById('authModal')?.remove();
 
@@ -110,11 +100,9 @@ function showAuthModal(mode = 'login') {
 
   document.body.appendChild(modal);
 
-  /* 關閉 */
   document.getElementById('closeAuthModal').addEventListener('click', closeAuthModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeAuthModal(); });
 
-  /* Tab 切換 */
   modal.querySelectorAll('.modal-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       modal.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
@@ -124,7 +112,6 @@ function showAuthModal(mode = 'login') {
     });
   });
 
-  /* Google 登入 */
   document.getElementById('googleAuth').addEventListener('click', async () => {
     const { error } = await db.auth.signInWithOAuth({
       provider: 'google',
@@ -156,7 +143,7 @@ function bindAuthForm(mode) {
   const submitBtn = document.getElementById('authSubmit');
   if (!submitBtn) return;
 
-  document.getElementById('authModal').addEventListener('keydown', e => {
+  modal.addEventListener('keydown', e => {
     if (e.key === 'Enter') submitBtn.click();
   });
 
@@ -182,7 +169,7 @@ function bindAuthForm(mode) {
         closeAuthModal();
         showToast('登入成功！');
         updateNavAuth();
-        navigateTo(location.hash.replace('#','') || 'home');
+        navigateTo(location.hash.replace('#', '') || 'home');
       }
     } else {
       if (!name) { showAuthError('請填寫暱稱'); submitBtn.disabled = false; submitBtn.textContent = '建立帳號'; return; }
@@ -198,7 +185,7 @@ function bindAuthForm(mode) {
         showAuthModal('login');
       }
     }
-  });
+  };
 
   document.getElementById('forgotPassword')?.addEventListener('click', async () => {
     const email = document.getElementById('authEmail')?.value.trim();
@@ -208,6 +195,7 @@ function bindAuthForm(mode) {
     else { showToast('重設密碼信已寄出！'); closeAuthModal(); }
   });
 }
+
 function showAuthError(msg) {
   const el = document.getElementById('authError');
   if (el) { el.textContent = msg; el.style.display = 'block'; }
@@ -217,23 +205,24 @@ function closeAuthModal() {
   document.getElementById('authModal')?.remove();
 }
 
-/* ── 登出 ── */
 async function signOut() {
   await db.auth.signOut();
+  window.currentUser = null;
+  window.currentProfile = null;
+  updateNavAuth();
+  showToast('已登出');
+  navigateTo('home');
 }
 
-/* ── 工具：需要登入才能執行 ── */
 function requireAuth(callback) {
   if (window.currentUser) callback();
   else showAuthModal('login');
 }
 
-/* ── 工具：是否為主辦人 ── */
 function isAdmin() {
   return window.currentProfile?.role === 'admin';
 }
 
-/* ── 匯出 ── */
 window.showAuthModal  = showAuthModal;
 window.closeAuthModal = closeAuthModal;
 window.signOut        = signOut;
