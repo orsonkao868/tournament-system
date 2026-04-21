@@ -4,26 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="BXHUB 戰技 — 全台最大 BeybladeX 競技賽事管理平台" />
-  <title>BXHUB 戰技 | BeybladeX 賽事平台</title>
-
-  <!-- CSS -->
+  <title>TBXC 賽事管理系統 | BeybladeX</title>
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/nav.css" />
   <link rel="stylesheet" href="css/home.css" />
   <link rel="stylesheet" href="css/bracket.css" />
   <link rel="stylesheet" href="css/standings.css" />
   <link rel="stylesheet" href="css/create.css" />
-
-  <!-- Supabase CDN -->
+  <link rel="stylesheet" href="css/modal.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-
-  <!-- ── 導覽列 ── -->
   <nav class="nav" id="nav">
     <div class="nav-logo">
       <div class="nav-logo-mark" aria-hidden="true">
-        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 20 20" fill="none">
           <circle cx="10" cy="10" r="8" stroke="white" stroke-width="1.8"/>
           <circle cx="10" cy="10" r="2.5" fill="white"/>
           <line x1="10" y1="2" x2="10" y2="18" stroke="white" stroke-width="1.2" opacity="0.5"/>
@@ -32,45 +27,48 @@
           <line x1="16" y1="4" x2="4" y2="16" stroke="white" stroke-width="1" opacity="0.3"/>
         </svg>
       </div>
-      <span class="nav-logo-text">BX<span class="accent">HUB</span></span>
+      <span class="nav-logo-text">TBXC<span class="accent">賽事管理系統</span></span>
     </div>
-
-    <!-- 漢堡選單（手機用） -->
     <button class="nav-hamburger" id="hamburger" aria-label="開啟選單" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
-
     <div class="nav-menu" id="navMenu">
       <div class="nav-tabs">
         <button class="nav-tab active" data-page="home">賽事列表</button>
         <button class="nav-tab" data-page="bracket">對陣表</button>
         <button class="nav-tab" data-page="standings">積分榜</button>
         <button class="nav-tab" data-page="create">舉辦賽事</button>
+        <button class="nav-tab" data-page="admin" id="adminTab" style="display:none">主辦後台</button>
       </div>
       <div class="nav-actions">
         <button class="btn-ghost" id="btnLogin">登入</button>
         <button class="btn-pink" id="btnSignup">參賽報名</button>
+        <div class="user-menu" id="userMenu" style="display:none">
+          <div class="user-avatar" id="userAvatar">?</div>
+          <div class="user-info">
+            <span class="user-name" id="userNameDisplay">—</span>
+            <span class="user-role" id="userRoleDisplay">選手</span>
+          </div>
+          <button class="btn-signout" onclick="signOut()">登出</button>
+        </div>
       </div>
     </div>
   </nav>
-
-  <!-- ── 頁面容器 ── -->
   <main id="app">
-    <!-- 各頁面內容由 router.js 動態注入 -->
-    <div id="page-home" class="page active"></div>
-    <div id="page-bracket" class="page"></div>
+    <div id="page-home"      class="page active"></div>
+    <div id="page-bracket"   class="page"></div>
     <div id="page-standings" class="page"></div>
-    <div id="page-create" class="page"></div>
+    <div id="page-create"    class="page"></div>
+    <div id="page-admin"     class="page"></div>
   </main>
-
-  <!-- ── 全域 Toast 通知 ── -->
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
-
-  <!-- JS（順序重要） -->
   <script src="js/supabase.js"></script>
   <script src="js/router.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/tournaments.js"></script>
   <script src="js/bracket.js"></script>
   <script src="js/standings.js"></script>
+  <script src="js/register.js"></script>
+  <script src="js/admin.js"></script>
 </body>
 </html>
