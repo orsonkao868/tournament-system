@@ -59,8 +59,8 @@
 
    ============================================================ */
 
-const SUPABASE_URL = 'https://your-project.supabase.co';   // ← 替換
-const SUPABASE_KEY = 'your-anon-key-here';                  // ← 替換
+const SUPABASE_URL = 'https://jycnwieurqdbbcxznucp.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_lWTYUgWva6xwMMIvHSGYfQ_PJtsQbkT';
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
