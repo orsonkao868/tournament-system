@@ -160,7 +160,7 @@ function bindAuthForm(mode) {
     if (e.key === 'Enter') submitBtn.click();
   });
 
-  submitBtn.addEventListener('click', async () => {
+  submitBtn.onclick = async () => {
     const email    = document.getElementById('authEmail')?.value.trim();
     const password = document.getElementById('authPassword')?.value;
     const name     = document.getElementById('authName')?.value.trim();
