@@ -42,7 +42,7 @@ function formatLabel(f) {
 window.formatLabel = formatLabel;
 
 /* ── 路由 ── */
-const PAGES = ['home', 'bracket', 'standings', 'create'];
+const PAGES = ['home', 'bracket', 'standings', 'create', 'admin'];
 
 function navigateTo(page) {
   if (!PAGES.includes(page)) page = 'home';
@@ -68,6 +68,7 @@ function navigateTo(page) {
   if (page === 'bracket')    initBracket();
   if (page === 'standings')  initStandings();
   if (page === 'create')     initCreate();
+  if (page === 'admin')      initAdmin();
 }
 
 /* ── 導覽列 Tab 點擊 ── */
@@ -96,7 +97,7 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('#nav')) closeMenu();
 });
 
-/* ── 初次載入：讀取 URL hash ── */
+
 window.addEventListener('DOMContentLoaded', () => {
   const hash = location.hash.replace('#', '') || 'home';
   navigateTo(hash);
