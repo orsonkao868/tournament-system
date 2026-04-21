@@ -38,6 +38,9 @@ function renderCard(t) {
       <circle cx="10" cy="10" r="2.5" fill="#f01e7a"/>
     </svg>`;
 
+  const canRegister = ['open', 'upcoming'].includes(t.status);
+  const isFull = (t.participants_count ?? 0) >= t.size;
+
   return `
     <div class="t-card" data-id="${t.id}" role="button" tabindex="0" aria-label="查看 ${t.name} 對陣表">
       <div class="t-card-top">
@@ -50,6 +53,7 @@ function renderCard(t) {
         <span class="t-card-players"><strong>${current}</strong> / ${t.size} 人</span>
         <span class="tag">${t.size}人制</span>
       </div>
+      ${canRegister ? `<button class="t-card-register" data-tid="${t.id}" ${isFull ? 'disabled' : ''}>${isFull ? '報名已滿' : '立即報名'}</button>` : ''}
     </div>`;
 }
 
@@ -91,6 +95,14 @@ function renderList() {
   }
 
   grid.innerHTML = filtered.map(renderCard).join('') + renderAddCard();
+
+  /* 報名按鈕點擊 */
+  grid.querySelectorAll('.t-card-register').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      showRegisterModal(btn.dataset.tid);
+    });
+  });
 
   /* 卡片點擊 → 前往對陣表 */
   grid.querySelectorAll('.t-card[data-id]').forEach(card => {
