@@ -156,7 +156,6 @@ function bindAuthForm(mode) {
   const submitBtn = document.getElementById('authSubmit');
   if (!submitBtn) return;
 
-  /* Enter 鍵送出 */
   document.getElementById('authModal').addEventListener('keydown', e => {
     if (e.key === 'Enter') submitBtn.click();
   });
@@ -172,13 +171,19 @@ function bindAuthForm(mode) {
     submitBtn.textContent = '處理中...';
 
     if (mode === 'login') {
-      const { error } = await db.auth.signInWithPassword({ email, password });
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
       if (error) {
         showAuthError('登入失敗，請確認帳號密碼');
         submitBtn.disabled = false;
         submitBtn.textContent = '登入';
+      } else {
+        window.currentUser = data.user;
+        window.currentProfile = await fetchProfile(data.user.id);
+        closeAuthModal();
+        showToast('登入成功！');
+        updateNavAuth();
+        navigateTo(location.hash.replace('#','') || 'home');
       }
-      /* 成功由 onAuthStateChange 處理 */
     } else {
       if (!name) { showAuthError('請填寫暱稱'); submitBtn.disabled = false; submitBtn.textContent = '建立帳號'; return; }
       const { data, error } = await db.auth.signUp({ email, password });
@@ -195,18 +200,14 @@ function bindAuthForm(mode) {
     }
   });
 
-  /* 忘記密碼 */
   document.getElementById('forgotPassword')?.addEventListener('click', async () => {
     const email = document.getElementById('authEmail')?.value.trim();
     if (!email) { showAuthError('請先輸入 Email'); return; }
-    const { error } = await db.auth.resetPasswordForEmail(email, {
-      redirectTo: location.href
-    });
+    const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: location.href });
     if (error) showAuthError('寄送失敗：' + error.message);
     else { showToast('重設密碼信已寄出！'); closeAuthModal(); }
   });
 }
-
 function showAuthError(msg) {
   const el = document.getElementById('authError');
   if (el) { el.textContent = msg; el.style.display = 'block'; }
